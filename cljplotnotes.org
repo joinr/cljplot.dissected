@@ -1,0 +1,143 @@
+* Rendering
+
+#+BEGIN_SRC clojure
+(defn graph-canvas
+  "Create canvas to draw a chart on"
+  ([graph-conf] (graph-canvas graph-conf false))
+  ([{:keys [w h orientation rendering-hint ^double oversize] :or {orientation :top oversize 100}} highest?]
+   (let [[^int cw ^int ch] (if (#{:left :right} orientation) [h w] [w h])
+         canvas-shift (/ oversize 2)
+         canvas-shift- (- canvas-shift)
+         c (canvas (+ oversize cw) (+ oversize ch) (if rendering-hint
+                                                     rendering-hint
+                                                     (if highest? :highest :high)))]
+     {:canvas c
+      :anchor [canvas-shift- canvas-shift-]
+      :shift  [canvas-shift canvas-shift]
+      :w w
+      :h h})))
+#+END_SRC
+
+Creates a clojure2d.core/canvas object configured according to the
+optionally specified width/height, an orientation (the direction of "up" for
+the y-axis, one of  :bottom, :top, :left, :right).  Wraps the configured
+canvas in a map, where
+
+#+BEGIN_SRC clojure
+{:canvas clojure2d.canvas
+ :anchor [x,y] for translating to canvas coordinates.
+ :w canvas-width
+ :h canvas-height}
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(defn canvas-orientation
+  "Convert layout orientation to canvas orientations"
+  [orient]
+  (get {:bottom :top-left- :top :bottom-left+ :left :bottom-right+ :right :bottom-left-} orient :bottom-left+))
+#+END_SRC 
+
+#+BEGIN_SRC clojure
+(defmacro do-graph
+  "Wrap canvas creation and orientation."
+  {:style/indent 2}
+  ([graph-conf highest-render? & body]
+   (let [c (symbol "c")]
+     `(let [canv# (graph-canvas ~graph-conf ~highest-render?)
+            orient# (canvas-orientation (:orientation ~graph-conf))]
+        (with-oriented-canvas orient# [~c (:canvas canv#)]
+          (translate ~c (:shift canv#))
+          ~@body)
+        canv#))))
+#+END_SRC 
+
+* Plot definition
+
+** Core API
+To create plots, we have a few principle methods that
+users can extend to define their own plots.
+
+Method dispatch occurs on the type of the first argument, t.
+These specifications are utilized at different points in the
+plot generation process, and are generally tied together
+as a plot-type (or layer) under the [:series ...] 
+construct.
+
+
+#+BEGIN_SRC clojure
+(defmulti data-extent (fn [t data config] t))
+#+END_SRC
+
+Computes the extrema of the data (typically a seq of input)
+with additional info culled from the plot configuration config.
+
+This is used to determine the visual extents, through the
+filter of custom scales, for processes such as synchonizing
+scales, axes, labels, etc. across various rendering layouts.
+ 
+#+BEGIN_SRC clojure
+(defmulti render-graph (fn [t data config chart-data] t))
+#+END_SRC
+
+This is a fundamental rendering function that currently
+leverages clojure2d to emit scaled, visual shapes
+according to the information provided other inputs.
+
+We project the raw input, a sequence of datums in data,
+onto a Clojure2D canvas target, with any intermediate scaling
+operations or the like performed prior to emitting
+drawing calls.
+
+Note: the current implementations for most rendering
+functions are focused on static, immediate-mode rendering
+that's called once, and are not targeting dynamic plots 
+or interactive graphics.  As such, caching, efficient
+re-drawing, and other optimizations are not implemented
+here or in the Clojure2D library.
+
+#+BEGIN_SRC clojure
+(defmulti prepare-data (fn [t data config] t))
+#+END_SRC
+
+Allows any user-defined preparation steps, e.g. 
+binning, grouping, or other transformations, possibly
+generating supplemental data to inform derived visual
+channels (e.g. computing statistical measures to 
+provide derivative shapes for a box-plot).
+
+#+BEGIN_SRC clojure
+(defmulti postprocess-data (fn [t data config] t))
+#+END_SRC
+
+Similar to prepare-data, except users can hook into
+the production pipeline and provide additional
+transforms.  Current use is TBD (still learning).
+
+
+** defaults 
+#+BEGIN_SRC clojure
+(defmethod data-extent :default [_ data _] (common-extent data))
+#+END_SRC clojure
+Use a naive, common-extent function to compute extents as best as 
+possible.  Likely assumes that the input data conforms to linear
+coordinates in the plane.
+
+#+BEGIN_SRC clojure
+(defmethod prepare-data :default [_ data _] data)
+#+END_SRC
+
+Do nothing.
+
+#+BEGIN_SRC clojure 
+(defmethod postprocess-data :default [_ data _] data)
+#+END_SRC 
+
+Do nothing.
+
+#+BEGIN_SRC clojure
+(defmethod render-graph :default [_ _ _ chart-data] (do-graph chart-data false))
+#+END_SRC 
+
+#+BEGIN_SRC clojure
+(defmethod data-extent :empty [_ _ _] {})
+#+END_SRC
