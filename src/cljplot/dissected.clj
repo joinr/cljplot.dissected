@@ -253,40 +253,40 @@
 
   
 ;;where config
-{:stroke {:size #function[clojure.core/constantly/fn--5657]},
- :color  #function[clojure.core/constantly/fn--5657],
- :size   #function[clojure.core/constantly/fn--5657],
- :extent
- {:x [:numerical [412.2 517.8]],
-  :y [:numerical [77.65 217.35]]},
- :chart-type :scatter,
- :margins {:x [0.05 0.05], :y [0.05 0.05]},
- :shape #function[clojure.core/constantly/fn--5657],
- :position [0 0],
- :series-id 1
- :x :scale-map
- :y :scale-map
- }
+;; {:stroke {:size #function[clojure.core/constantly/fn--5657]},
+;;  :color  #function[clojure.core/constantly/fn--5657],
+;;  :size   #function[clojure.core/constantly/fn--5657],
+;;  :extent
+;;  {:x [:numerical [412.2 517.8]],
+;;   :y [:numerical [77.65 217.35]]},
+;;  :chart-type :scatter,
+;;  :margins {:x [0.05 0.05], :y [0.05 0.05]},
+;;  :shape #function[clojure.core/constantly/fn--5657],
+;;  :position [0 0],
+;;  :series-id 1
+;;  :x :scale-map
+;;  :y :scale-map
+;;  }
 
 ;;where chart-data (typically supplied by a
 ;;the cljplot.core/render-lattice function:
 
-{:w :number ;;width of the subcanvas
- :h :number ;;height of the subcanvas
- :x :number ;;global x coordinate of the origin of the subcanvas
- :y :number ;;global y coordinate of the origin of the subcanvas 
- :extent {:x :number ;;x-extents in local coordinates
-          :y :number ;;y-extents in local coordinates
-          }}
+;; {:w :number ;;width of the subcanvas
+;;  :h :number ;;height of the subcanvas
+;;  :x :number ;;global x coordinate of the origin of the subcanvas
+;;  :y :number ;;global y coordinate of the origin of the subcanvas 
+;;  :extent {:x :number ;;x-extents in local coordinates
+;;           :y :number ;;y-extents in local coordinates
+;;           }}
 
 
 ;;render-graph is responsible for clojure2d canvas set up (typially
 ;;via creating a new, isolated canvas), and computing an
 ;;anchor point.
 ;;THe result is a clojure2d Canvas record [I think].
-{:canvas ;;resulting image/canvas to coerce to an image
- :anchor ;;x,y coordinates that anchor the plot
- }
+;; {:canvas ;;resulting image/canvas to coerce to an image
+;;  :anchor ;;x,y coordinates that anchor the plot
+;;  }
 
 ;;ex:
 ;;a simple scatter plot with 2 points [417 211], and [513 84]
