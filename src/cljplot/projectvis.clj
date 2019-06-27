@@ -178,17 +178,17 @@ res
 
 (comment
   ;;Another simpler example, this time with cljplot itself.
-(-> (b/series [:grid]
-              [:boxes (-> (cc/classify-projects "../cljplot/" "../fastmath/")
-                          classified->boxes) {:color :blue
-                                              :outline :white
-                                              :labels {:font-size 40 :depth-scale 1}}])
-    (b/preprocess-series)
-    (b/add-axes  :bottom {:ticks {:font-size 20.0}})
-    (b/add-axes  :left   {:ticks {:font-size 20.0}})  
-    (r/render-lattice {:width 1000 :height 1000})
-    (save "cljplot.png")
-    (show))
+  (-> (b/series [:grid]
+                [:boxes (-> (cc/classify-projects "../cljplot/" "../fastmath/")
+                            classified->boxes) {:color (clojure2d.color/brighten :grey)
+                                                :outline :white
+                                                :labels {:font-size 60 :depth-scale 0.7 :font-color :white}}])
+      (b/preprocess-series)
+      (b/add-axes  :bottom {:ticks {:font-size 20.0}})
+      (b/add-axes  :left   {:ticks {:font-size 20.0}})  
+      (r/render-lattice    {:width 2000 :height 2000})
+      (save "cljplot.png")
+      (show))
 )
 
 
