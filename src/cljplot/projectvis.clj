@@ -164,7 +164,10 @@ res
 ;;in various naive ways.  This is
 ;;our first tree-map!
 (-> (b/series [:grid]
-              [:boxes rs {:color :white}])
+              [:boxes rs {:color   :white
+                          :outline :black
+                          ;:labels {:font-size 30 :depth-scale 0.8}
+                          }])
     (b/preprocess-series)
     (b/add-axes  :bottom)
     (b/add-axes  :left) 
@@ -177,10 +180,12 @@ res
   ;;Another simpler example, this time with cljplot itself.
 (-> (b/series [:grid]
               [:boxes (-> (cc/classify-projects "../cljplot/" "../fastmath/")
-                          classified->boxes) {:color :blue :outline :white}])
+                          classified->boxes) {:color :blue
+                                              :outline :white
+                                              :labels {:font-size 40 :depth-scale 1}}])
     (b/preprocess-series)
-    (b/add-axes  :bottom)
-    (b/add-axes  :left  )  
+    (b/add-axes  :bottom {:ticks {:font-size 20.0}})
+    (b/add-axes  :left   {:ticks {:font-size 20.0}})  
     (r/render-lattice {:width 1000 :height 1000})
     (save "cljplot.png")
     (show))
