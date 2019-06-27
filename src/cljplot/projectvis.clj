@@ -166,13 +166,13 @@ res
 (-> (b/series [:grid]
               [:boxes rs {:color   :white
                           :outline :black
-                          ;:labels {:font-size 30 :depth-scale 0.8}
+                          :labels {:font-size 30 :depth-scale 0.8}
                           }])
     (b/preprocess-series)
     (b/add-axes  :bottom)
     (b/add-axes  :left) 
     (r/render-lattice {:width 1000 :height 1000})
-    (save "primitivetree.png")
+    (save "./results/primitivetree.png")
     (show))
 )
 
@@ -187,7 +187,7 @@ res
       (b/add-axes  :bottom {:ticks {:font-size 20.0}})
       (b/add-axes  :left   {:ticks {:font-size 20.0}})  
       (r/render-lattice    {:width 2000 :height 2000})
-      (save "cljplot.png")
+      (save "./results/cljplot.png")
       (show))
 )
 
